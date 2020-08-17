@@ -1,0 +1,35 @@
+//This is NOT a plugin.
+//This is a scripted event condition. To use it, check the box "Enable Script" in your event's condition and copy and paste this text into the text field. You may edit it to your liking.
+//This condition searches for a unit in the specified list that has the specified state. If found, the unit's ID is stored in the given variable and the condition returns true.
+//Written by Ephraim225.
+
+(function () {
+
+var stateid = 3; //Change to the state you're searching for
+var playerList = PlayerList.getAliveList(); //Change to "EnemyList.getAliveList(); if searching for an enemy unit
+var table = 1; //Change to whatever variable table you want
+var variable = 0; //Change to whatever variable you want to store the unit ID to
+
+
+var count = playerList.getCount();
+var i, unit, id;
+vartable = root.getMetaSession().getVariableTable(table);
+var lockedon = false;
+
+for (i = 0; i < count; i++) {
+	currentPlayer = playerList.getData(i);
+	list = currentPlayer.getTurnStateList();
+	count = list.getCount();
+        
+	for (i = 0; i < count; i++) {
+	turnState = list.getData(i);
+	if (turnState.getState().getId() == stateid ) {
+	lockedon = true;
+	j = currentPlayer.getId();
+	vartable.setVariable(variable,j);
+	}
+}
+}
+
+return lockedon;
+}) ();
