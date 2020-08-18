@@ -1,0 +1,24 @@
+//This is NOT a plugin.
+//This is a script you can run in the "Execute Script" command. Copy and paste it into the text field and edit whatever you want. The purpose of this script is to subtract levels from the unit whose ID is in the specified variable. You can set how much to subtract and what the minimum level allowed is. (Negatives totally work in the engine, but any level below zero doesn't display.)
+//Written by Ephraim225.
+
+{
+table = 1; //Variable table you wish to access
+varia = 0; //Variable to load
+subtract = 20; //Levels to subtract
+minimum = 1; //minimum level
+
+vartable = root.getMetaSession().getVariableTable(table);
+unit = vartable.getVariable(varia);
+data = PlayerList.getAliveList().getData(unit);
+lv = data.getLv();
+lv -= subtract;
+if (lv < minimum)
+{
+lv = minimum;
+}
+
+data.setLv(lv);
+
+data.setExp(0); //delete this line if you don't want to touch EXP
+}
