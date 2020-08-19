@@ -1,6 +1,7 @@
 //This is NOT a plugin.
 //This is a scripted event condition. To use it, check the box "Enable Script" in your event's condition and copy and paste this text into the text field. You may edit it to your liking.
 //This condition searches for a unit who has reached the specified level. If found, the unit's ID is stored in the given variable and the condition returns true.
+//I have also added another function. Add the custom parameter {cantpromote: 1} to any class you'd like this function to ignore.
 //Written by Ephraim225.
 
 (function () {
@@ -18,9 +19,13 @@ var lockedon = false;
 for (i = 0; i < count; i++) {
 	currentPlayer = playerList.getData(i);
 	lv = currentPlayer.getLv();
+	classa = currentPlayer.getClass();
+	custom = classa.custom.cantpromote;
 
-	if (lv >= level ) { //You can change the comparator to == or <= or whatever
-	lockedon = true;
+	if (lv >= level) {
+	if (custom == null) {
+lockedon = true;
+}
 	j = currentPlayer.getId();
 	vartable.setVariable(variable,j);
 
