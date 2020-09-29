@@ -1,0 +1,212 @@
+-- SRPG Studio: Ephraim's Snag That Falls In The Direction It Was Attacked Explained --
+
+That's a mouthful of a title. This text file will describe how to make a Snag that falls in the direction it was attacked - Snags in Fire Emblem typically fall in a fixed direction, but with this method you can make it happen in any direction you want. This is VERY complicated so brace yourself.
+
+So, you'll want to prepare your variables and switches now. You need:
+
+- Six variables. For convenience, I recommend naming them: "X Loser", "Y Loser", "X Winner", "Y Winner", "X Difference", "Y Difference". MAKE SURE ALL VARIABLES HAVE A MINIMUM VALUE OF -9999. This is important.
+
+- Two ID variables. Name them "Loser ID" and "Winner ID".
+
+- Four global switches. For convenience, I recommend naming them: "North", "East", "South", "West"
+
+Now what we're going to do is use a unit to represent the snag. The event we'll be making goes in the death event of said unit. I recommend making it a Bookmark unit so you can make it one time and then spawn it in any chapter you please and have it work anywhere.
+
+Now, onto the event. This is all for the Death event of the snag unit.
+
+The first event command will be "Change Switches". Change all four of your global switches to "Off". This will ensure the event starts fresh every time.
+
+Next, use the "Change Variable" event command. Change the "Loser" variable to the ID of the Battle Loser, and change the "Winner" variable to the ID of the Battle Winner. The Battle Loser is the unit that most recently was KO'd (the snag in this case) and the Battle Winner is the most recent unit to KO something. These options are at the bottom of the window that appears when you click on "Operand".
+
+Next, we need to copy the coordinates of these units into variables, so using "Change Variable" again, do the following:
+
+- Set the variables "X Loser" and "Y Loser" to the X and Y coordinates of the unit whose ID is stored in "Loser ID". Then copy the value in "X Loser" and "Y Loser" into "X Difference" and "Y Difference" respectively.
+
+- Set the variables "X Winner" and "Y Winner" to the X and Y coordinates of the unit whose ID is stored in "Winner ID".
+
+- Now, subtract "X Winner" from "X Difference" and subtract "Y Winner" from "Y Difference".
+
+So, what was the purpose of all that? What we've done is get the coordinates of the Battle Winner and Battle Loser, then subtracted the coordinates of the Battle Winner from the Battle Loser's coordinates. This means that the "X Difference" and "Y Difference" variables now contain the difference between the coordinates of the two units. This was all done to determine the direction the attacker was attacking from.
+
+In SRPG Studio, your coordinates are greater the further southeast you are, so we can figure out what direction the attacker attacked from by checking the two variables to see if they're higher or lower than zero. If, for example, this event results in X Difference being a negative number, the attacker must have been attacking from the east (because the attacker's X coordinate was greater and subtracting it made the variable a negative number.) Therefore, the snag should fall west.
+
+So, the next four event commands should turn on each switch based on the result of the X Difference and Y Difference variables, like this:
+
+Change Switch: North: On
+(Trigger) Y Difference | 0 | Less than
+
+Change Switch: West: On
+(Trigger) X Difference | 0 | Less than
+
+Change Switch: South: On
+(Trigger) Y Difference | 1 | Or More
+
+Change Switch: East: On
+(Trigger) X Difference | 1 | Or More
+
+"But wait!" you ask, "Isn't it possible that more than one switch will be on?"
+
+That's right! If the attacker was attacking from a range of 2 or more, two switches get turned on, which will confuse the game later. Therefore, we need to determine which switches need to be turned off. The way we are going to do that involves everyone's most hated subject: Math.
+
+Picture a 5x5 grid, the rows and columns labeled from 1 to 5, with our snag in the center (3,3). Now draw two straight lines across the opposite corners (making an X shape). We need to tell the game which quadrant of this grid the attacker was in. 
+This will be done by checking the X Difference and Y Difference variables. But it's not simply a matter of checking which is greater. If Y Difference is greater than X Difference, you've only ruled out North and East as possibilities; you still have two possible quadrants left.
+
+Therefore we need to do some additional calculations and turn off the switches after we've ruled them out as possibilities.
+
+But first, there's another issue: We need to know which direction the attacker is farther away in, but what if X Difference and Y Difference are equal? Well in that case we'll simply treat it as if one was greater than the other. (unless you are going to account for this possibility when making the snag fall, which in this case I am not.)
+
+Anyways, let's say North and West are the two switches that got turned on. We know the attacker is in one of those quadrants, and the further Northwest you are, the lower your coordinates, so we can check if Y Difference is less than X Difference. If so, he is further north than west and we can turn off the West switch. Otherwise, turn off the North switch.
+
+We can do the same if South and East are the two switches that turned on. The further southeast you are, the greater your coordinates, so now if Y Difference is greater than X Difference, the attacker must be further South and we turn off the East Switch. Otherwise, turn off the South switch.
+
+But if North and East are turned on, OR, West and South are turned on, it creates an issue, because now one variable is positive and the other is negative. In these situations, I compare the variables as before but I temporarily multiply X Difference by -1. This will ensure both variables are greater than zero, and we can once again test which direction the attacker is further away in.
+
+If you didn't understand that, I'll save time; here's what the next eight event commands should look like:
+
+Change Switch: North: Off
+(Trigger) North: On, West: On / Y Difference | X Difference | or More
+
+Change Switch: West: Off
+(Trigger) North: On, West: On / Y Difference | X Difference | Less than
+
+Change Switch: North: Off
+(Trigger) North: On, East: On / X Difference*-1 | Y Difference | Less than
+
+Change Switch: East: Off
+(Trigger) North: On, East: On / X Difference*-1 | Y Difference | Or More
+
+Change Switch: East: Off
+(Trigger) South: On, East: On / X Difference | Y Difference | Less than
+
+Change Switch: South: Off
+(Trigger) South: On, East: On / X Difference | Y Difference | Or More
+
+Change Switch: West: Off
+(Trigger) South: On, West: On / Y Difference | X Difference*-1 | Or More
+
+Change Switch: South: Off
+(Trigger) South: On, West: On / Y Difference | X Difference*-1 | Less Than
+
+With all of that done, there is now only one switch on and that switch tells us which direction the snag is falling in. Mission accomplished. Now what?
+
+Now we get to the part you've all been waiting for - changing the map tiles. We're going to use a lot of Control Map Pos. All you have to do is use this command on the tile the snag is on, then alter the variable you stored its coordinates in, then use the command again, then alter the variable, etc. until you've made as many changes as you wish.
+
+So first, use this command:
+
+Control Map Pos: Specify (X Loser, Y Loser)
+
+I leave it to you to handle selecting the tile. Just be certain to check "Ornament" if needed. "Ornament" means that the tile you select will have transparency, and will be "on top" of the original tile.
+
+Next, we need four commands that alter X Loser and Y Loser based on which switch was kept turned on:
+
+Change Variable: X Loser | 1 | Add
+(Trigger) East: On
+
+Change Variable: Y Loser | 1 | Add
+(Trigger) South: On
+
+Change Variable: X Loser | 1 | Sub
+(Trigger) West: On
+
+Change Variable: Y Loser | 1 | Sub
+(Trigger) North: On
+
+Then put in another Control Map Pos command:
+
+Control Map Pos: Specify (X Loser, Y Loser)
+
+And then the four commands that alter X Loser and Y Loser as I already went over, and then Control Map Pos again, repeat until you've changed as many tiles as you wish. Then turn all the switches off again for safety. Complicated, huh?
+
+Here's what the final result ought to resemble, from start to finish:
+
+Change Switch: North: Off, South: Off, East: Off, West: Off
+
+Change Variable: Loser ID | Battle Loser ID | Set
+
+Change Variable: Winner ID | Battle Winner ID | Set
+
+Change Variable: X Loser | Loser ID X | Set
+
+Change Variable: Y Loser | Loser ID Y | Set
+
+Change Variable: X Winner | Winner ID X | Set
+
+Change Variable: Y Winner | Winner ID Y | Set
+
+Change Variable: X Difference | X Loser | Set
+
+Change Variable: X Difference | X Winner | Sub
+
+Change Variable: Y Difference | Y Loser | Set
+
+Change Variable: Y Difference | Y Winner | Sub
+
+Change Switch: North: On
+(Trigger) Y Difference | 0 | Less than
+
+Change Switch: West: On
+(Trigger) X Difference | 0 | Less than
+
+Change Switch: South: On
+(Trigger) Y Difference | 1 | Or More
+
+Change Switch: East: On
+(Trigger) X Difference | 1 | Or More
+
+Change Switch: North: Off
+(Trigger) North: On, West: On / Y Difference | X Difference | or More
+
+Change Switch: West: Off
+(Trigger) North: On, West: On / Y Difference | X Difference | Less than
+
+Change Switch: North: Off
+(Trigger) North: On, East: On / X Difference*-1 | Y Difference | Less than
+
+Change Switch: East: Off
+(Trigger) North: On, East: On / X Difference*-1 | Y Difference | Or More
+
+Change Switch: East: Off
+(Trigger) South: On, East: On / X Difference | Y Difference | Less than
+
+Change Switch: South: Off
+(Trigger) South: On, East: On / X Difference | Y Difference | Or More
+
+Change Switch: West: Off
+(Trigger) South: On, West: On / Y Difference | X Difference*-1 | Or More
+
+Change Switch: South: Off
+(Trigger) South: On, West: On / Y Difference | X Difference*-1 | Less Than
+
+Control Map Pos: Specify (X Loser, Y Loser)
+
+Change Variable: X Loser | 1 | Add
+(Trigger) East: On
+
+Change Variable: Y Loser | 1 | Add
+(Trigger) South: On
+
+Change Variable: X Loser | 1 | Sub
+(Trigger) West: On
+
+Change Variable: Y Loser | 1 | Sub
+(Trigger) North: On
+
+Control Map Pos: Specify (X Loser, Y Loser)
+
+Change Variable: X Loser | 1 | Add
+(Trigger) East: On
+
+Change Variable: Y Loser | 1 | Add
+(Trigger) South: On
+
+Change Variable: X Loser | 1 | Sub
+(Trigger) West: On
+
+Change Variable: Y Loser | 1 | Sub
+(Trigger) North: On
+
+Control Map Pos: Specify (X Loser, Y Loser)
+
+Change Switch: North: Off, South: Off, East: Off, West: Off
+
+And that's all of it. Go wild, folks.
