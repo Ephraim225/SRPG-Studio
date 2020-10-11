@@ -1,4 +1,14 @@
-//Work in progress. Based on the sample plugin by Goinza.
+//"Poker Damage" by Ephraim225
+//Based on the sample plugin by Goinza.
+//The idea here is that you can create a custom skill with the keyword "PokerDamage". When it activates, it will check your damage, hit and crit, and examine the digits contained in these numbers (if any go over 100 it counts as 99.) Bonus damage will be added if you have a certain number of digits.
+//Use these custom paramaters:
+//"checkdigit" is the number you're checking for
+//"requirement" is how many of that number you need
+//"bonus" is the amount of extra damage
+//So for instance, I can set checkdigit to 6 to check for sixes, requirement to 3 to require three sixes, and then if hit is 66 and damage is 6, bonus damage is applied.
+
+//"Poker Damage" is a really dumb name but I couldn't come up with much else.
+//Also, fair reminder for scripters: Use "==" when comparing! It's really important!
 
 (function() {
 
@@ -11,31 +21,17 @@
     SkillRandomizer.isCustomSkillInvokedInternal = function(active, passive, skill, keyword) {
 		
         if (keyword === 'PokerDamage') { //check if the keyword is right
-		var pow, def, dmg, unit, weapon, hit, avo, crt, crtavo;
-		unit = active;
-		weapon = ItemControl.getEquippedWeapon(unit);
 		
-		if (Miscellaneous.isPhysicsBattle(weapon)) {
-			// Physical attack or Bow attack.
-			pow = RealBonus.getStr(unit);
-			def = RealBonus.getDef(passive);
-		}
-		else {
-			// Magic attack
-			pow = RealBonus.getMag(unit);
-			def = RealBonus.getRes(passive);
-		}
-		dmg = pow + weapon.getPow() - def;
-		hit = AbilityCalculator.getHit(unit, weapon);
-		avo = AbilityCalculator.getAvoid(passive);
-		crt = AbilityCalculator.getCritical(unit, weapon);
-		crtavo = AbilityCalculator.getCriticalAvoid(passive);
+		arr = AttackChecker.getAttackStatusInternal(active, BattlerChecker.getRealBattleWeapon(active), passive);
 		
-		hit = hit-avo;
+		dmg = arr[0];
+		hit = arr[1];
+		crt = arr[2];
+		
 		if (hit > 99) {
 			hit = 99;
 		}
-		crt = crt-crtavo;
+
 		if (crt > 99) {
 			crt = 99;
 		}
@@ -51,43 +47,40 @@
 
 			//what number to check for
 			chkdig = skill.custom.checkdigit;
-			if (chkdig = null) {
+			if (chkdig == null) {
 				chkdig = 0;
-				root.log("fuck");
 			}
 			
 			//how many of that number needed
 			req = skill.custom.required;
-			if (req = null) {
+			if (req == null) {
 				req = 0;
-				root.log("fuck");
 			}
 
 			//count how many of the checked number
 			number = 0;
-			if (chkdig = digit1) {
+			if (chkdig == digit1) {
 				number += 1;
 			}
-			if (chkdig = digit2) {
+			if (chkdig == digit2) {
 				number += 1;
 			}
-			if (chkdig = digit3) {
+			if (chkdig == digit3) {
 				number += 1;
 			}
-			if (chkdig = digit4) {
+			if (chkdig == digit4) {
 				number += 1;
 			}
-			if (chkdig = digit5) {
+			if (chkdig == digit5) {
 				number += 1;
 			}
-			if (chkdig = digit6) {
+			if (chkdig == digit6) {
 				number += 1;
 			}
 			
 			//return that the skill is activated, else the default is returned
 			//problem is that the skill always activates so it must be returning this all the time???
 			if (number >= req) {
-			root.log("fuck");
             return this._isSkillInvokedInternal(active, passive, skill);
 			}
         }
