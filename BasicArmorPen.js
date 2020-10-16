@@ -34,6 +34,7 @@
     var alias4 = AttackEvaluator.HitCritical.calculateDamage;
     AttackEvaluator.HitCritical.calculateDamage = function(virtualActive, virtualPassive, attackEntry) {
         var basedamage = alias4.call(this, virtualActive, virtualPassive, attackEntry);
+	var damage = 0;
 		var weapon = BattlerChecker.getBaseWeapon(virtualActive);
         var skill = SkillControl.checkAndPushCustomSkill(virtualActive.unitSelf, virtualPassive.unitSelf, attackEntry, true, 'ExtraDamage');
 
