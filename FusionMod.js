@@ -1,4 +1,4 @@
-//Made by Ephraim225.
+//Made by Ephraim225. Credit to piketrcechillas for their assistance with the latter part.
 //Literally the only thing the first part of the plugin does is comment out the bit of code that prevents CPU units from being able to do Fusions.
 //The AI won't do it naturally, but they can do Fusions in events.
 //NEW: Give an enemy a custom skill with the keyword "CapSkill" to leave them at one health and add a State when you kill them.
