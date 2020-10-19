@@ -31,13 +31,13 @@ CatchFusionAction.setFusionParam = function(fusionParam) {
 DamageControl.checkHp = function(active, passive) {
 		var hp = passive.getHp();
 		var skill1 = SkillControl.getPossessionCustomSkill(active, "DefeatEnemy")
-		var skill2 = SkillControl.getPossessionCustomSkill(active, "KilledByEnemy")
+		var skill2 = SkillControl.getPossessionCustomSkill(passive, "KilledByEnemy")
 		
 		if (hp > 0) {
 			return;
 		}
 		
-		//New part of the code here.
+		//Check if the active unit has a skill. Set enemy health to 1 when they are defeated.
 		if (skill1 !== null && skill1.custom.addstate !== null) {
 			var list = root.getBaseData().getStateList();
 			var status = list.getDataFromId(skill.custom.addstate);
@@ -45,12 +45,12 @@ DamageControl.checkHp = function(active, passive) {
 			passive.setHp(1);
 			return;
 		}
-		//New part of the code here.
+		//Check if the passive unit has a skill. Set their health to 1 when they are defeated.
 		if (skill2 !== null && skill2.custom.addstate !== null) {
 			var list = root.getBaseData().getStateList();
 			var status = list.getDataFromId(skill.custom.addstate);
-			StateControl.arrangeState(active, status, 0);
-			active.setHp(1);
+			StateControl.arrangeState(passive, status, 0);
+			passive.setHp(1);
 			return;
 		}
 		
