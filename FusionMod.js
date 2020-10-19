@@ -1,7 +1,8 @@
-//Made by Ephraim225. Credit to piketrcechillas for their assistance with the latter part.
+//Made by Ephraim225.
 //Literally the only thing the first part of the plugin does is comment out the bit of code that prevents CPU units from being able to do Fusions.
 //The AI won't do it naturally, but they can do Fusions in events.
-//NEW: Give an enemy a custom skill with the keyword "CapSkill" to leave them at one health and add a State when you kill them.
+//NEW: You can make skills that leave you or your opponent at one health and add a State when killed.
+//Use the keyword "DefeatEnemy" for a skill that adds the state to your foe when defeated. Use "KilledByEnemy" to add the state to yourself when you are defeated instead.
 //To determine which state, set the custom parameter "addstate" to the ID of the state you want.
 //You can use this to trigger an event on the unit when they have whatever state you specified.
 
@@ -29,18 +30,27 @@ CatchFusionAction.setFusionParam = function(fusionParam) {
 	
 DamageControl.checkHp = function(active, passive) {
 		var hp = passive.getHp();
-		var skill = SkillControl.getPossessionCustomSkill(active, "CapAttack")
+		var skill1 = SkillControl.getPossessionCustomSkill(active, "DefeatEnemy")
+		var skill2 = SkillControl.getPossessionCustomSkill(active, "KilledByEnemy")
 		
 		if (hp > 0) {
 			return;
 		}
 		
 		//New part of the code here.
-		if (skill !== null && skill.custom.addstate !== null) {
+		if (skill1 !== null && skill1.custom.addstate !== null) {
 			var list = root.getBaseData().getStateList();
 			var status = list.getDataFromId(skill.custom.addstate);
 			StateControl.arrangeState(passive, status, 0);
 			passive.setHp(1);
+			return;
+		}
+		//New part of the code here.
+		if (skill2 !== null && skill2.custom.addstate !== null) {
+			var list = root.getBaseData().getStateList();
+			var status = list.getDataFromId(skill.custom.addstate);
+			StateControl.arrangeState(active, status, 0);
+			active.setHp(1);
 			return;
 		}
 		
