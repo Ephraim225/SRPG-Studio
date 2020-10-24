@@ -1,0 +1,13 @@
+//Randomizer by Ephraim225
+//This very simple code lets you make an array of possible values; the game will select one at random.
+//The idea being you can run this in an Execute Script command for every character to grant them a random class from a list of possible classes.
+//But you can do whatever you like with it. Just note that it returns the result so be sure to store that to a variable!
+
+(function() {
+var classarray = [
+1, 2, 3, 4
+];
+var rng = Math.floor(Math.random() * classarray.length);
+
+return classarray[rng];
+})();
