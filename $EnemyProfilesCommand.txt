@@ -1,0 +1,105 @@
+//Enemy Profiles by Ephraim225
+/* This requires some explaination. Back in the days of FE hacking, the way the units worked is that every unit on the map
+had this thing called a Unit ID. The game would determine starting stats, portraits, and other stuff through the ID.
+Multiple units could have the same ID, so if you made multiple enemies with the same ID, altering the Unit ID would
+therefore alter every enemy with that ID at the same time. Nice and convenient for handling large enemy groups.
+
+SRPG Studio doesn't do it that way. All enemy units are treated as unique units unless they're reinforcements.
+You have to edit every single enemy unit manually and that can get annoying. That's why I made this command.
+
+Paste this into an Execute Code command in your Opening Event. It will check every enemy for the
+custom parameter, "profileID". If it doesn't exist, it moves onto the next enemy. If it does exist,
+the stats, skills, name, and other information of a player unit will be copied onto the enemy.
+
+So for example if an enemy has a profileID of 2, the player unit with that ID will have its stats
+copied onto that enemy. That way you can set up a "profile" for a group of enemies, and altering the
+profile will in turn alter all enemies using it. Note that class and inventory are NOT copied.
+Enemies not on the map at the time the event is run are unaffected entirely. If you're using a weapon
+ranks plugin, the ranks of the player unit should get copied over, so keep that in mind. If you wish
+to make changes to the enemy after the stats have been copied you'll have to do that through events.
+
+Finally, this copies from the DATABASE, not the player's party, in case that matters.
+
+This may not be super helpful for everyone but what you get out of it is up to you. If nothing
+else you could learn from the coding here.*/
+
+{
+	//unit: the unit we are copying
+	//x, y: coordinates of the target unit
+	var playerList = root.getBaseData().getPlayerList();
+	var enemyList = root.getCurrentSession().getEnemyList(); //Green units can be given profiles by changing this to "getAllyList"
+	var enemyCount = enemyList.getCount();
+	var paramCount = ParamGroup.getParameterCount();
+	
+	for (i = 0; i < enemyCount; i++) {
+
+	targetunit = enemyList.getData(i);
+	profile = targetunit.custom.profileID; //the custom parameter tells which player unit to copy off of
+	
+	if (profile == null) {
+	continue;
+	} //If it's null we move to the next iteration of the for loop
+	
+	playerunit = playerList.getData(profile);
+	
+	//class
+	//cls = playerunit.getClass();
+	//targetunit.setClass(cls);
+	
+	//parameter
+	for (j = 0; j < paramCount; j++) {
+				
+			if  (j < 8 || j == 8 || j == 9 || j == 10) {
+				var oldstat = ParamGroup.getUnitValue(playerunit, j);
+				
+				ParamGroup.setUnitValue(targetunit, j, oldstat);
+				
+			}
+		}
+		// update HP to prevent overflow etc.
+			var maxHp = RealBonus.getMhp(targetunit);
+			targetunit.setHp(maxHp);
+	
+	//growths (Dunno if this does anything)
+	var growths = playerunit.getGrowthBonus();
+	var growths2 = targetunit.getGrowthBonus();
+	for (j = 0; j < paramCount; j++) {
+				
+				if  (j < 8 || j == 8 || j == 9 || j == 10) {
+					var oldstat = growths.getAssistValue(j);
+				
+					growths2.setAssistValue(j, oldstat);
+				}
+			}
+	
+	//items (If you un-comment this it'll copy inventories too if you desire)
+	//for (j = 0; j < 5; j++) {
+			//currentItem = playerunit.getItem(j);
+			//targetunit.setItem(j, currentItem);
+			//}
+			
+	//skills
+	SkillChecker.arrangeSkill(targetunit, null, 2);
+	
+	var list = playerunit.getSkillReferenceList();
+	var count = list.getTypeCount();
+	
+	for (k = 0; k < count; k++) {
+			skill = list.getTypeData(k);
+			SkillChecker.arrangeSkill(targetunit, skill, 0);
+			}
+	
+	//other
+	name = playerunit.getName();
+	targetunit.setName(name);
+	name = playerunit.getDescription();
+	targetunit.setDescription(name);
+	name = playerunit.getFaceResourceHandle();
+	targetunit.setFaceResourceHandle(name);
+	name = playerunit.getImportance();
+	targetunit.setImportance(name);
+	name = playerunit.getOriginalMotionColor();
+	targetunit.setOriginalMotionColor(name);
+
+			}
+}
