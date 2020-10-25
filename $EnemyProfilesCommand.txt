@@ -26,8 +26,8 @@ else you could learn from the coding here.*/
 {
 	//unit: the unit we are copying
 	//x, y: coordinates of the target unit
-	var playerList = root.getBaseData().getPlayerList();
-	var enemyList = root.getCurrentSession().getEnemyList(); //Green units can be given profiles by changing this to "getAllyList"
+	var playerList = root.getBaseData().getPlayerList(); //You can also get the info from Bookmarks by changine getPlayerList to "getBookmarkUnitList"
+	var enemyList = root.getCurrentSession().getEnemyList(); //Green units can be given profiles by changing getEnemyList to "getAllyList"
 	var enemyCount = enemyList.getCount();
 	var paramCount = ParamGroup.getParameterCount();
 	
