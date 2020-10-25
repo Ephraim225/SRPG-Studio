@@ -1,4 +1,4 @@
-//Enemy Profiles by Ephraim225
+//Enemy Profiles by Ephraim225. Originally written for robinco with their assistance.
 /* This requires some explaination. Back in the days of FE hacking, the way the units worked is that every unit on the map
 had this thing called a Unit ID. The game would determine starting stats, portraits, and other stuff through the ID.
 Multiple units could have the same ID, so if you made multiple enemies with the same ID, altering the Unit ID would
