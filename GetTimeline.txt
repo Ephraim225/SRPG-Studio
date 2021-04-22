@@ -1,0 +1,20 @@
+//This is a short script I wrote for Game Maker Studio. It's basically a much better way of tracking time, which I think will benefit anyone - even if you're not using Game Maker, you should be able to adapt the script to whatever language you're working in.
+//So, the main way you'd track time is to have a variable that increases every frame. But if you just check the frame variable, then you're going to have a lot of "if frame = 20" and such, and it gets worse if you want to repeat events every X frames. I figured it would eventually turn out cluttered and hard to read. Hence this script.
+//There are four arguments. The first argument is the variable tracking time. The second is the frame you want the event to start occuring on. Argument 3 is how often you want the event to occur (a 1 would mean every frame, 2 means every other frame, etc.) and the final argument is how many times the event should occur in total.
+//The script returns true or false. True if the event should occur on that frame, false if not. Example:
+//"if GetTimeline(frame,60,3,30)"
+//Would check the frame variable, and return true on the 60th frame or higher, every 3 frames, until the event has occured 30 times, stopping on the 150th frame. It's all calculated mathematically. At any time you could alter the frame variable directly to go "back in time" as it were.
+//You could also pass variables into the other arguments too. You could speed up or slow down the frequency of events dynamically.
+
+var time, endframe;
+time = (argument0-argument1) mod argument2 //Calculates whether the input variable is a multiple of the third argument
+endframe = argument1 + (argument2*argument3) //Calculates when the event should stop occuring
+
+if argument0 <= endframe && argument0 >= argument1 && time = 0
+{
+return true;
+}
+else
+{
+return false;
+}
